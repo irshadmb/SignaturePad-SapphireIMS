@@ -1,6 +1,6 @@
 Use case:  User’s signature is very important to be captured as a business process. 
 
-You may be thinking it will be a complex development. No, it’s not a complex development, if you are using SapphireIMS, I am going to show you how it can be integrated with 30min. Yes, you heard right less than 30min.
+You may be thinking it will be a complex development. No, it’s not a complex development, if you are using SapphireIMS, I am going to show you how it can be integrated within 30min. Yes, you heard right less than 30min.
 
 We are going to use open-source signature pad library in our integration – Please refer following URL for more detail “<https://github.com/szimek/signature_pad>”. You no need to download anything we are going to use CDN for the script. 
 
