@@ -27,9 +27,89 @@ That’s it, let us start some basic coding.
 First we have to load the script from CDN, we will be using JQuery & java script in our scripting
 
 Let us start writing the code.
+```
+jQuery.getScript( "https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js", function( data, textStatus, jqxhr ) {
+  
+  // Append button two buttons with in SapphireIMS Edit Record page
+  // 1. Signature Button to get the signature as image and uploading as attachment as part of the record
+  // 2. Erase the signature if it is wrongly signed.
+  // 
+  // We are going to use insertAfter - get the id after cancel button from the Edit Record Page, i.e, readOnly
+  // 
 
-|<p>// First we have to load the script from CDN, we will be using JQuery & java script in our scripting</p><p></p><p>jQuery.getScript( "https://cdn.jsdelivr.net/npm/signature\_pad@2.3.2/dist/signature\_pad.min.js", function( data, textStatus, jqxhr ) {</p><p>  </p><p>`  `// Append button two buttons with in SapphireIMS Edit Record page</p><p>`  `// 1. Signature Button to get the signature as image and uploading as attachment as part of the record</p><p>`  `// 2. Erase the signature if it is wrongly signed.</p><p>`  `// </p><p>`  `// We are going to use insertAfter - get the id after cancel button from the Edit Record Page, i.e, readOnly</p><p>`  `// </p><p></p><p>`  `jQuery("&nbsp;  &nbsp;<input id='signatureBTN' name='signatureBTN' type='button' value='Signature' class='addbuttons'>").insertAfter("#readOnly");</p><p>`  `jQuery("&nbsp;  &nbsp;<input id='erase' name='erase' type='button' value='Erase' class='addbuttons'>").insertAfter("#signatureBTN");</p><p></p><p></p><p>`  `// Add a canvas to the edit record after our last button erase which has been created. </p><p></p><p>`  `jQuery("<div><canvas id='signature-pad' class='signature-pad' width=900 height=200></canvas></div>").insertAfter("#erase");</p><p>  </p><p>`  `// Get the canvas element</p><p>`  `var canvas = document.getElementById('signature-pad');</p><p>  </p><p>`  `// Create signaturePad element and by using canvas</p><p>`  `var signaturePad = new SignaturePad(canvas, {</p><p>`    `backgroundColor: 'rgb(255, 255, 255)' // necessary for saving image as JPEG; can be removed is only saving as PNG or SVG</p><p>`  `});</p><p></p><p>`  `// Now we are ready with UI elements and it is rendering on our Edit Record page, time to write some actions</p><p></p><p>`  `// Register a click event to clear the signature pad</p><p></p><p>`  `document.getElementById('erase').addEventListener('click', function () {</p><p>`    `signaturePad.clear();</p><p>`  `});</p><p></p><p>`  `// Util method to get the csrf token from the current request for uploading </p><p>`  `function getMeta(metaName) {</p><p>`    `const metas = document.getElementsByTagName('meta');</p><p>`    `for (let i = 0; i < metas.length; i++) {</p><p>`        `if (metas[i].getAttribute('name') === metaName) {</p><p>`            `return metas[i].getAttribute('content');</p><p>`        `}</p><p>`    `}</p><p>`    `return '';</p><p>`  `}</p><p></p><p>`  `// Util method to convert the data uri from signature pad to Blob for upload as a binary file.</p><p>`  `function DataURIToBlob(dataURI) {</p><p>`    `const splitDataURI = dataURI.split(',');</p><p>`    `const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1]);</p><p>`    `const mimeString = splitDataURI[0].split(':')[1].split(';')[0];</p><p></p><p>`    `const ia = new Uint8Array(byteString.length);</p><p>`    `for (let i = 0; i < byteString.length; i++)</p><p>`        `ia[i] = byteString.charCodeAt(i);</p><p></p><p>`    `return new Blob([ia], { type: mimeString });</p><p>`  `}</p><p></p><p>`   `// Final event register for signature button to upload as part of the record</p><p></p><p>`  `document.getElementById('signatureBTN').addEventListener('click', function()</p><p>`  `{</p><p>`    `if (signaturePad.isEmpty()) {</p><p>`        `return alert("Please provide a signature first.");</p><p>`    `}</p><p>        </p><p>`    `var dataURL = signaturePad.toDataURL('image/jpeg');</p><p>`    `var fd = new FormData();</p><p>`    `fd.append('upload', DataURIToBlob(dataURL), 'Singature.jpg');</p><p>`    `fd.append('commentArea', "Signature uploaded");</p><p>         </p><p>`    `jQuery.ajax({</p><p>`                    `type: "POST",</p><p>`                    `data: fd,</p><p>`                    `processData: false,</p><p>`                    `contentType: false,</p><p>`                    `url: "Upload?\_csrf="+getMeta('\_csrf')+'&problemID='+document.getElementById("ticketid").value</p><p>`                `}).done(function(o) {</p><p>`                    `console.log('saved');</p><p>`                `});  </p><p>`    `});</p><p>});</p>|
-| :- |
+  jQuery("&nbsp;  &nbsp;<input id='signatureBTN' name='signatureBTN' type='button' value='Signature' class='addbuttons'>").insertAfter("#readOnly");
+  jQuery("&nbsp;  &nbsp;<input id='erase' name='erase' type='button' value='Erase' class='addbuttons'>").insertAfter("#signatureBTN");
+
+
+  // Add a canvas to the edit record after our last button erase which has been created. 
+
+  jQuery("<div><canvas id='signature-pad' class='signature-pad' width=900 height=200></canvas></div>").insertAfter("#erase");
+  
+  // Get the canvas element
+  var canvas = document.getElementById('signature-pad');
+  
+  // Create signaturePad element and by using canvas
+  var signaturePad = new SignaturePad(canvas, {
+    backgroundColor: 'rgb(255, 255, 255)' // necessary for saving image as JPEG; can be removed is only saving as PNG or SVG
+  });
+
+  // Now we are ready with UI elements and it is rendering on our Edit Record page, time to write some actions
+
+  // Register a click event to clear the signature pad
+
+  document.getElementById('erase').addEventListener('click', function () {
+    signaturePad.clear();
+  });
+
+  // Util method to get the csrf token from the current request for uploading 
+  function getMeta(metaName) {
+    const metas = document.getElementsByTagName('meta');
+    for (let i = 0; i < metas.length; i++) {
+        if (metas[i].getAttribute('name') === metaName) {
+            return metas[i].getAttribute('content');
+        }
+    }
+    return '';
+  }
+
+  // Util method to convert the data uri from signature pad to Blob for upload as a binary file.
+  function DataURIToBlob(dataURI) {
+    const splitDataURI = dataURI.split(',');
+    const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1]);
+    const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
+
+    const ia = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++)
+        ia[i] = byteString.charCodeAt(i);
+
+    return new Blob([ia], { type: mimeString });
+  }
+
+   // Final event register for signature button to upload as part of the record
+
+  document.getElementById('signatureBTN').addEventListener('click', function()
+  {
+    if (signaturePad.isEmpty()) {
+        return alert("Please provide a signature first.");
+    }
+        
+    var dataURL = signaturePad.toDataURL('image/jpeg');
+    var fd = new FormData();
+    fd.append('upload', DataURIToBlob(dataURL), 'Singature.jpg');
+    fd.append('commentArea', "Signature uploaded");
+         
+    jQuery.ajax({
+                    type: "POST",
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    url: "Upload?_csrf="+getMeta('_csrf')+'&problemID='+document.getElementById("ticketid").value
+                }).done(function(o) {
+                    console.log('saved');
+                });  
+    });
+});
+```
 
 ![](Aspose.Words.2cd4b8ba-272b-49b8-9230-7842ec7ac60e.002.png)
 
